@@ -58,13 +58,5 @@ bookmarkRouter
             .status(204)
             .end()
     })
-/*
-  bookmarks: PropTypes.arrayOf(PropTypes.shape({
-    title: PropTypes.string.isRequired,
-    url: PropTypes.string.isRequired,
-    rating: PropTypes.number,
-    description: PropTypes.string
-
-*/
 
 module.exports = bookmarkRouter

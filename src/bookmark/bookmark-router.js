@@ -58,7 +58,7 @@ bookmarkRouter
         }
         else res
             .status(404)
-            .send("Not Found")
+            .send("404 Not Found")
     })
     .delete((req, res) => {
         const {id} = req.params;

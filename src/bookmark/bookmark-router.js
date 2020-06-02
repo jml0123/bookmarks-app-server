@@ -50,6 +50,16 @@ bookmarkRouter
 
 bookmarkRouter
     .route("/bookmarks/:id")
+    .get((req, res)=> {
+        const {id} = req.params;
+        const found = bookmarks.find(bookmark => bookmark.id === id)
+        if (found) {
+            res.json(found)
+        }
+        else res
+            .status(404)
+            .send("Not Found")
+    })
     .delete((req, res) => {
         const {id} = req.params;
         bookmarks = bookmarks.filter(bookmark => bookmark.id !== id);

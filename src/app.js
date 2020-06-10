@@ -26,7 +26,6 @@ app.use(function validateBearerToken(req, res, next) {
     }
     next()
 })
-app.use(bookmarkRouter)
 
 app.use(function errorHandler(error, req, res, next){
     let response
@@ -39,9 +38,15 @@ app.use(function errorHandler(error, req, res, next){
     }
     res.status(500).json(response)
 })
+app.use(bookmarkRouter)
 
 app.get("/", (req, res) => {
     res.send("Make requests to /bookmarks");
 })
+
+app.get('/xss', (req, res) => {
+    res.cookie('secretToken', '1234567890');
+    res.sendFile(__dirname + '/xss-example.html');
+  });
 
 module.exports = app

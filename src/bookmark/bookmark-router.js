@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const xss = require('xss')
 const {v4: uuid} = require("uuid")
@@ -5,12 +6,14 @@ const logger = require("../logger");
 //let { bookmarks } = require('../store');
 
 const bookmarkRouter = express.Router();
+
+
 const bodyParser = express.json()
 const BookmarksService = require('./bookmarks-service')
 
 
 bookmarkRouter
-    .route("/bookmarks")
+    .route("/")
     .all((req, res, next) => {
         const knexInstance = req.app.get('db');
         BookmarksService.getAllBookmarks(knexInstance)
@@ -53,7 +56,7 @@ bookmarkRouter
             logger.info(`Bookmark with url ${url} created.`)
             res 
                 .status(201)
-                .location(`/bookmarks/${bookmark.id}`)
+                .location(path.posix.join(req.originalUrl, `/${bookmark.id}`))
                 .json({
                     id: bookmark.id,
                     title: xss(bookmark.title),
@@ -67,7 +70,7 @@ bookmarkRouter
     })
 
 bookmarkRouter
-    .route("/bookmarks/:id")
+    .route("/:id")
     .all((req, res, next) => {
         const knexInstance = req.app.get('db');
         const {id} = req.params;
@@ -100,6 +103,26 @@ bookmarkRouter
         res
             .status(204)
             .end()
+    })
+    .patch(bodyParser, (req, res, next) => {
+        const knexInstance = req.app.get('db');
+        const {title, url, rating, description} = req.body;
+        const updatedData = {title, url, rating, description}
+        const {id} = req.params
+
+        const numFieldValues = Object.values(updatedData).filter(Boolean).length
+        if (numFieldValues === 0) {
+            return res.status(400).json({
+                error: {
+                    message: `Request body must contain either title, url, rating or description`
+                }
+            })
+        }
+        BookmarksService.updateBookmark(knexInstance, id, updatedData)
+        .then(numRowsAffected => {
+            res.status(204).end();
+        })
+        .catch(next)
     })
 
 module.exports = bookmarkRouter

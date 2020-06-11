@@ -38,7 +38,7 @@ app.use(function errorHandler(error, req, res, next){
     }
     res.status(500).json(response)
 })
-app.use(bookmarkRouter)
+app.use('/api/bookmarks', bookmarkRouter)
 
 app.get("/", (req, res) => {
     res.send("Make requests to /bookmarks");
